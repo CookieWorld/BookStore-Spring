@@ -102,8 +102,8 @@ public class UserService implements UserDetailsService {
     public void updateProfile(User user, String email, String password, String phone) throws MessagingException {
         String userEmail = user.getEmail();
 
-        boolean isEmailChanged = (email != null && !email.equals(userEmail)) || (userEmail != null && userEmail.equals(email));
-        boolean isPasswordChanged = (password != null && !password.equals(user.getPassword()));
+        boolean isEmailChanged = (email != null && !email.equals(userEmail)) || (userEmail != null && !userEmail.equals(email));
+        boolean isPasswordChanged = ( !password.isEmpty() && password != null && !password.equals(user.getPassword()));
         boolean isPhoneChanged =  (phone != null && !phone.equals(user.getPhone()));
 
         if (isEmailChanged) {
