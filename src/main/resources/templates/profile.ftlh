@@ -29,32 +29,34 @@
     </form>
 
     <h2>Список заказов</h2>
-    <table class="table">
-    <thead>
+    <table class="table table-borderless table-hover">
+    <thead class="thead-light">
     <tr>
-        <td>Название книги</td>
-        <td>Автор</td>
-        <td>Цена</td>
-        <td>Количество</td>
-        <td></td>
-        <td></td>
+        <th>Дата заказа</th>
+        <th>Название книги</th>
+        <th>Автор</th>
+        <th>Цена</th>
+        <th>Количество</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
     <#list orders as order>
-        <tr>
-        <td>${order.getId()!""}
+        <#assign count = 0>
         <#list order.getOrderLines() as o>
             <tr>
+                <#if count gte 1>
+                    <th></th>
+                    <#else><th>${order.getDate()}</th>
+                </#if>
                 <td>${o.getBook().getName()}</td>
                 <td>${o.getBook().getAuthor()}</td>
                 <td>${o.getBook().getPrice()}</td>
                 <td>${o.getQuantity()}</td>
             </tr>
+            <#assign count = count + 1>
         </#list>
-        </td>
-        <td>Total price: ${order.getId()}</td>
-        </tr>
+        <th>Total price: ${order.getTotalPrice()!""}</th>
     </#list>
     </tbody>
 </@c.page>

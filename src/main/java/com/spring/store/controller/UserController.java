@@ -62,13 +62,8 @@ public class UserController {
             @AuthenticationPrincipal User user,
             @RequestParam String email,
             @RequestParam String password,
-            @RequestParam String phone,
-            BindingResult bindingResult,
-            Model model) throws MessagingException {
+            @RequestParam String phone) throws MessagingException {
         userService.updateProfile(user, email, password, phone);
-        Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
-
-        model.mergeAttributes(errors);
         return "redirect:/user/profile";
     }
 

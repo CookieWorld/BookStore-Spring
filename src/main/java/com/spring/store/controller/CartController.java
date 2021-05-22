@@ -4,12 +4,14 @@ import com.spring.store.model.*;
 import com.spring.store.repos.BookRepo;
 import com.spring.store.repos.OrderLineRepo;
 import com.spring.store.repos.OrderRepo;
-import com.spring.store.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -123,7 +125,6 @@ public class CartController {
             order.setOrderLines(orderLines);
         }
         order.setTotalPrice(cart.getTotalPrice());
-        order.setDate(new Date().getTime());
         orderRepo.save(order);
         for (OrderLine o : orderLines) {
             orderLineRepo.save(o);

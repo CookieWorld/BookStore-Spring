@@ -1,5 +1,8 @@
 package com.spring.store.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.sun.istack.NotNull;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
@@ -11,7 +14,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Date date;
+    private Date date = new Date();
 
     private Integer totalPrice;
 
@@ -30,8 +33,8 @@ public class Order {
         this.id = id;
     }
 
-    public Long getDate() {
-        return new Date().getTime();
+    public Date getDate() {
+        return date;
     }
 
     public void setDate(Date date) {
