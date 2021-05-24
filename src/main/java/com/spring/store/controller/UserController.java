@@ -41,9 +41,10 @@ public class UserController {
     @PostMapping
     public String userSave(
             @RequestParam String username,
+            @RequestParam Boolean active,
             @RequestParam Map<String, String> form,
             @RequestParam("userId") User user) {
-        userService.saveUser(user, username, form);
+        userService.saveUser(user, username, active,form);
         return "redirect:/user";
     }
 

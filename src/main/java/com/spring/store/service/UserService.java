@@ -85,8 +85,14 @@ public class UserService implements UserDetailsService {
         return userRepo.findAll();
     }
 
-    public void saveUser(User user, String username, Map<String, String> form) {
+    public void saveUser(User user, String username, Boolean active, Map<String, String> form) {
         user.setUsername(username);
+        user.setActive(active);
+        if (active) {
+            user.setActivationCode(null);
+        } else {
+            user.setActivationCode(UUID.randomUUID().toString());
+        }
         Set<String> roles = Arrays.stream(Role.values())
                 .map(Role::name)
                 .collect(Collectors.toSet());
@@ -103,8 +109,8 @@ public class UserService implements UserDetailsService {
         String userEmail = user.getEmail();
 
         boolean isEmailChanged = (email != null && !email.equals(userEmail)) || (userEmail != null && !userEmail.equals(email));
-        boolean isPasswordChanged = ( !password.isEmpty() && password != null && !password.equals(user.getPassword()));
-        boolean isPhoneChanged =  (phone != null && !phone.equals(user.getPhone()));
+        boolean isPasswordChanged = (!password.isEmpty() && password != null && !password.equals(user.getPassword()));
+        boolean isPhoneChanged = (phone != null && !phone.equals(user.getPhone()));
 
         if (isEmailChanged) {
             user.setEmail(email);

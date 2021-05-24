@@ -89,7 +89,7 @@
                            value="<#if user??>${user.address!""}</#if>" id="inputAddress" placeholder="Улица"
                            name="address" required>
                 </div>
-                <input type="hidden" name="id" value="${user.id}"/>
+                <input type="hidden" name="userId" value="${user.id}"/>
                 <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                 <button type="submit" class="btn btn-primary ml-3" value="Заказать"> Заказать</button>
             </form>
