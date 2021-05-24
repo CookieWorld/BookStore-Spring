@@ -13,5 +13,6 @@
     </#if>
     <h2>Вход</h2>
     <@l.login "/login" />
+    <a href="/forgot_password">Забыли пароль?</a>
     <a href="/registration">Зарегистрироваться</a>
-</@c.page>
+    </@c.page>

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 
 @Service
 public class MailSender {
@@ -19,10 +20,10 @@ public class MailSender {
     @Value("${spring.mail.username}")
     private String username;
 
-    public void send(String emailTo, String subject, String message) throws MessagingException {
+    public void send(String emailTo, String subject, String message) throws MessagingException, UnsupportedEncodingException {
         MimeMessage mailMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mailMessage, "utf-8");
-        helper.setFrom(username);
+        helper.setFrom(username, "BookStore support");
         helper.setTo(emailTo);
         helper.setSubject(subject);
         helper.setText(message, true);

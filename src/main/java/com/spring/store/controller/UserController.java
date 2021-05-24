@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public class UserController {
             @AuthenticationPrincipal User user,
             @RequestParam String email,
             @RequestParam String password,
-            @RequestParam String phone) throws MessagingException {
+            @RequestParam String phone) throws MessagingException, UnsupportedEncodingException {
         userService.updateProfile(user, email, password, phone);
         return "redirect:/user/profile";
     }

@@ -1,24 +1,22 @@
 package com.spring.store.service;
 
-import com.spring.store.controller.ControllerUtils;
+import com.spring.store.exceptions.UserNotFoundExecption;
 import com.spring.store.model.Order;
-import com.spring.store.model.OrderLine;
 import com.spring.store.model.Role;
 import com.spring.store.model.User;
 import com.spring.store.repos.OrderRepo;
 import com.spring.store.repos.UserRepo;
-import freemarker.template.utility.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
 
 import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,7 +42,7 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public boolean addUser(User user) throws MessagingException {
+    public boolean addUser(User user) throws MessagingException, UnsupportedEncodingException {
         User userFromDB = userRepo.findByUsername(user.getUsername());
         if (userFromDB != null) {
             return false;
@@ -59,12 +57,24 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    private void sendMessage(User user) throws MessagingException {
+    private void sendMessage(User user) throws MessagingException, UnsupportedEncodingException {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = "<h1>Здравствуйте, " + user.getUsername() + "!</h1>\n" +
                     "<p>Добро пожаловать на сайт <b>Book store</b> :). Пожалуйста, перейдите по ссылке, чтобы активировать аккаунт</p>" +
                     "<a href=\"http://localhost:8080/activate/" + user.getActivationCode() + "\"</a>http://localhost:8080/activate/" + user.getActivationCode() + "</a>";
             mailSender.send(user.getEmail(), "Activation code", message);
+        }
+    }
+
+    public void sendMessage(String email, String token) throws MessagingException, UnsupportedEncodingException {
+        if (!StringUtils.isEmpty(email)) {
+            String message = String.format(
+                    "<h3>Здравствуйте!</h3> " +
+                    "<p>Вы запрашивали смену пароля</p>" +
+                    "<p><a href=\"http://localhost:8080/reset_password?token=" + token + "\"<b>Поменять пароль</b></a></p>" +
+                    "<p>Игнорируйте это письмо, если вы не запрашивали смену пароля.</p>"
+            );
+            mailSender.send(email, "Смена пароля", message);
         }
     }
 
@@ -105,7 +115,7 @@ public class UserService implements UserDetailsService {
         userRepo.save(user);
     }
 
-    public void updateProfile(User user, String email, String password, String phone) throws MessagingException {
+    public void updateProfile(User user, String email, String password, String phone) throws MessagingException, UnsupportedEncodingException {
         String userEmail = user.getEmail();
 
         boolean isEmailChanged = (email != null && !email.equals(userEmail)) || (userEmail != null && !userEmail.equals(email));
@@ -137,5 +147,28 @@ public class UserService implements UserDetailsService {
     public List<Order> getOrders(User user) {
         List<Order> allByUser = orderRepo.findAllByUser(user);
         return allByUser;
+    }
+
+    public void updateResetPasswordToken(String token, String email) throws UserNotFoundExecption {
+        User user = userRepo.findByEmail(email);
+        if (user != null) {
+            user.setResetPasswordToken(token);
+            userRepo.save(user);
+        } else {
+            throw new UserNotFoundExecption("Пользователя с такой почтой " + email + " не найден");
+        }
+    }
+
+    public User getByResetPasswordToken(String token) {
+        return userRepo.findByResetPasswordToken(token);
+    }
+
+    public void updatePassword(User user, String newPassword) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+
+        user.setResetPasswordToken(null);
+        userRepo.save(user);
     }
 }

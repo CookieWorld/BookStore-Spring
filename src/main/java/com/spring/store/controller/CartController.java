@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -98,7 +99,7 @@ public class CartController {
 
     @Transactional
     @PostMapping("/order")
-    public String order(@RequestParam("userId") User user) throws MessagingException {
+    public String order(@RequestParam("userId") User user) throws MessagingException, UnsupportedEncodingException {
         cartService.order(user);
         return "redirect:/cart";
     }

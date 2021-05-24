@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +31,7 @@ public class CartService {
     @Autowired
     private MailSender mailSender;
 
-    public void order(User user) throws MessagingException {
+    public void order(User user) throws MessagingException, UnsupportedEncodingException {
         Set<CartLine> cartLines = cart.getCartLineList();
         Order order = new Order();
         Set<OrderLine> orderLines = new HashSet<>();
@@ -63,7 +64,7 @@ public class CartService {
         } else return false;
     }
 
-    public void sendMessage(User user, Order order) throws MessagingException {
+    public void sendMessage(User user, Order order) throws MessagingException, UnsupportedEncodingException {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
                     "<h1>Здравствуйте, %s! </h1>\n" +
