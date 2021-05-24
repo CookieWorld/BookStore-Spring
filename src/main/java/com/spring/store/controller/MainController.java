@@ -1,7 +1,10 @@
 package com.spring.store.controller;
 
 import com.spring.store.model.Book;
+import com.spring.store.model.OrderLine;
 import com.spring.store.repos.BookRepo;
+import com.spring.store.repos.OrderLineRepo;
+import com.spring.store.repos.OrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -15,14 +18,18 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
 public class MainController {
-
     @Autowired
     private BookRepo bookRepo;
+
+    @Autowired
+    private OrderLineRepo orderLineRepo;
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -48,6 +55,29 @@ public class MainController {
         model.addAttribute("filter", filter);
 
         return "main";
+    }
+
+    @PostMapping("/")
+    public String edit(@RequestParam("bookId") Book book, @RequestParam Integer quantity, @RequestParam Integer price) {
+        Optional<Book> byId = bookRepo.findById(book.getId());
+        Book book1 = byId.get();
+        book1.setQuantity(quantity);
+        book1.setPrice(price);
+        bookRepo.save(book1);
+        return "redirect:/main";
+    }
+
+    @PostMapping("/remove")
+    public String remove(@RequestParam("bookId") Book book) {
+        List<OrderLine> allOrderLinesByBookId = orderLineRepo.findAllByBook_Id(book.getId());
+        for(OrderLine orderLine : allOrderLinesByBookId) {
+            orderLine.setAuthor(book.getAuthor());
+            orderLine.setName(book.getName());
+            orderLine.setPrice(book.getPrice());
+            orderLine.setBook(null);
+        }
+        bookRepo.deleteById(book.getId());
+        return "redirect:/main";
     }
 
     @GetMapping("/search")

@@ -47,11 +47,18 @@
             <tr>
                 <#if count gte 1>
                     <th></th>
-                    <#else><th>${order.getDate()}</th>
+                <#else>
+                    <th>${order.getDate()}</th>
                 </#if>
-                <td>${o.getBook().getName()}</td>
-                <td>${o.getBook().getAuthor()}</td>
-                <td>${o.getBook().getPrice()}</td>
+                <#if o.getBook()??>
+                    <td>${o.getBook().getName()}</td>
+                    <td>${o.getBook().getAuthor()}</td>
+                    <td>${o.getBook().getPrice()}</td>
+                <#else>
+                    <td>${o.getName()}</td>
+                    <td>${o.getAuthor()}</td>
+                    <td>${o.getPrice()}</td>
+                </#if>
                 <td>${o.getQuantity()}</td>
             </tr>
             <#assign count = count + 1>

@@ -37,7 +37,7 @@
                     </#if>
                 </div>
                 <div class="form-group">
-                    <input class="form-control col-md-6 ${(priceError??)?string('is-invalid', '')}" type="text"
+                    <input class="form-control col-md-6 ${(priceError??)?string('is-invalid', '')}" type="number"
                            value="<#if book??>1</#if>" name="price" placeholder="Цена"/>
                     <#if priceError??>
                         <div class="invalid-feedback mb-2">
@@ -70,23 +70,31 @@
     <div class="row row-cols-1 row-cols-md-3 g-4">
     <#list books as book>
         <div class="col">
-            <div class="card h-100">
+            <form method="post" action="/remove">
+                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                <input type="hidden" name="bookId" value="${book.getId()}">
+                <button type="submit" class="btn btn-outline-primary mt-3">Удалить</button>
+            </form>
+            <div class="card">
                 <#if book.filename??>
-                    <img class="card-img-top" src="../img/${book.filename}" alt="Card image cap">
+                    <img class="card-img-top" src="../img/${book.getFilename()}" alt="Card image cap">
                 </#if>
-                <form method="post" action="/cart/addToCart" enctype="multipart/form-data">
+                <form method="post" action="/" enctype="multipart/form-data">
                     <div class="card-body">
-                        <h5 class="card-title">${book.name}</h5>
-                        <p class="card-text">Автор: ${book.author}</p>
+                        <h5 class="card-title">${book.getName()}</h5>
+                        <p class="card-text">Автор: ${book.getAuthor()}</p>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item">Цена: ${book.price}</li>
+                            <label class="list-group-item">Цена:
+                                <input class="form-control col-md-20" type="number" name="price" min="0"
+                                       value="${book.getPrice()}"/>
+                            </label>
                             <label class="list-group-item">Количество:
-                                <input class="form-control col-md-4" type="number" name="quantity" min="1"
-                                       max="${book.quantity}" value="1"/>
+                                <input class="form-control col-md-15" type="number" name="quantity" min="0"
+                                       value="${book.getQuantity()}"/>
                             </label>
                         </ul>
                         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-                        <input type="hidden" name="id" value="${book.getId()}">
+                        <input type="hidden" name="bookId" value="${book.getId()}">
                         <button type="submit" class="btn btn-primary mt-3">Edit</button>
                     </div>
                 </form>
