@@ -40,6 +40,7 @@ public class CartService {
             OrderLine orderLine = new OrderLine();
             orderLine.setQuantity(c.getQuantity());
             orderLine.setBook(c.getBook());
+            orderLine.setPrice(c.getBook().getPrice());
             orderLine.setOrder(order);
             changeQuantity(c.getBook().getId(), c.getQuantity());
             orderLines.add(orderLine);

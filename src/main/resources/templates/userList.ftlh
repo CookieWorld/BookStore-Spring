@@ -42,7 +42,7 @@
                     </#list>
                 </td>
                 <td>
-                    <a href="/user/${user.id}">Edit</a>
+                    <a href="/user/${user.id}">Редактировать</a>
                 </td>
             </tr>
         </#list>

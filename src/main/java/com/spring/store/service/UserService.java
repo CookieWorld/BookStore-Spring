@@ -131,7 +131,7 @@ public class UserService implements UserDetailsService {
         }
 
         if (isPasswordChanged && !StringUtils.isEmpty(password)) {
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(password));
         }
 
         if (isPhoneChanged) {
@@ -171,4 +171,11 @@ public class UserService implements UserDetailsService {
         user.setResetPasswordToken(null);
         userRepo.save(user);
     }
+
+    public Iterable<Order> getOrdersList(){
+        Iterable<Order> orders = orderRepo.findAll();
+        return orders;
+    }
+
+
 }

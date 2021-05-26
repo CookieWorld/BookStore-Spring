@@ -18,6 +18,8 @@ public class Order {
 
     private Integer totalPrice;
 
+    private Status status = Status.Создан;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

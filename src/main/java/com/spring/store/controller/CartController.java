@@ -5,6 +5,7 @@ import com.spring.store.model.Cart;
 import com.spring.store.model.CartLine;
 import com.spring.store.model.User;
 import com.spring.store.repos.BookRepo;
+import com.spring.store.repos.UserRepo;
 import com.spring.store.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,9 @@ public class CartController {
 
     @Autowired
     private BookRepo bookRepo;
+
+    @Autowired
+    private UserRepo userRepo;
 
     @GetMapping
     public String cart(Model model) {
@@ -99,8 +103,19 @@ public class CartController {
 
     @Transactional
     @PostMapping("/order")
-    public String order(@RequestParam("userId") User user) throws MessagingException, UnsupportedEncodingException {
+    public String order(
+            @RequestParam("userId") User user,
+            @RequestParam(required = false, defaultValue = "false") Boolean save,
+            @RequestParam String country,
+            @RequestParam String address) throws MessagingException, UnsupportedEncodingException {
         cartService.order(user);
+        if(save) {
+            Optional<User> userById = userRepo.findById(user.getId());
+            User user1 = userById.get();
+            user1.setCountry(country);
+            user1.setAddress(address);
+            userRepo.save(user1);
+        }
         return "redirect:/cart";
     }
 

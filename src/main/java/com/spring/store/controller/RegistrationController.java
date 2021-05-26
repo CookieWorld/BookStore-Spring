@@ -45,6 +45,7 @@ public class RegistrationController {
 
         if (isConfirmEmpty) {
             model.addAttribute("password2Error", "Подтверждение пароля не может быть пустым");
+            return "registration";
         }
 
         if (user.getPassword() != null && !user.getPassword().equals(passwordConfirm)) {

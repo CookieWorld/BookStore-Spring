@@ -54,6 +54,14 @@ public class Book {
         this.id = id;
     }
 
+    public String getID() {
+        return String.valueOf(id);
+    }
+
+    public String getPricetoString() {
+        return String.valueOf(price);
+    }
+
     public String getName() {
         return name;
     }

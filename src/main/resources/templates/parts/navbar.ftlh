@@ -10,25 +10,30 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="/">Книги <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/">Книги</a>
             </li>
             <#if isAdmin = true>
                 <li class="nav-item active">
-                    <a class="nav-link" href="/main">Добавить книжки <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/main">Добавить книжки</a>
                 </li>
             </#if>
             <#if isAdmin = true>
                 <li class="nav-item active">
-                    <a class="nav-link" href="/user">Список пользователей<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/user">Список пользователей</a>
+                </li>
+            </#if>
+            <#if isAdmin = true>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/orderList">Список заказов</a>
                 </li>
             </#if>
             <li class="nav-item active">
-                <a class="nav-link" href="/cart">Корзина<span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/cart">Корзина</a>
             </li>
         </ul>
         <form method="get" action="/search" class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" name="filter" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <input class="form-control mr-sm-2" type="search" name="filter" placeholder="Поиск" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
         </form>
         <#if user??>
             <div class="navbar-text ml-3"><a class="nav-link" href="user/profile">${name}</a></div>

@@ -7,6 +7,10 @@ import com.spring.store.repos.OrderLineRepo;
 import com.spring.store.repos.OrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,24 +39,29 @@ public class MainController {
     private String uploadPath;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(@PageableDefault(sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable, Model model) {
 
-        Iterable<Book> books = bookRepo.findAll();
+        Page<Book> books = bookRepo.findAll(pageable);
         model.addAttribute("books", books);
+        model.addAttribute("url", "/");
 
         return "index";
     }
 
     @GetMapping("/main")
-    public String main(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
-        Iterable<Book> books;
+    public String main(
+            @RequestParam(required = false, defaultValue = "") String filter,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable,
+            Model model) {
+        Page<Book> books;
 
         if (!filter.isEmpty()) {
-            books = bookRepo.findByAuthorContainsOrNameContains(filter, filter);
-        } else books = bookRepo.findAll();
+            books = bookRepo.findByAuthorContainsOrNameContains(filter, filter, pageable);
+        } else books = bookRepo.findAll(pageable);
 
         model.addAttribute("books", books);
         model.addAttribute("filter", filter);
+        model.addAttribute("url", "/main");
 
         return "main";
     }
@@ -81,14 +90,18 @@ public class MainController {
     }
 
     @GetMapping("/search")
-    public String search(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
-        Iterable<Book> books;
+    public String search(
+            @RequestParam(required = false, defaultValue = "") String filter,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable,
+            Model model) {
+        Page<Book> books;
 
         if (!filter.isEmpty()) {
-            books = bookRepo.findByAuthorContainsOrNameContains(filter, filter);
-        } else books = bookRepo.findAll();
+            books = bookRepo.findByAuthorContainsOrNameContains(filter, filter, pageable);
+        } else books = bookRepo.findAll(pageable);
 
         model.addAttribute("books", books);
+        model.addAttribute("url", "/search");
 
         return "index";
     }

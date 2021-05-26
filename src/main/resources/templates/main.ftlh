@@ -1,4 +1,5 @@
 <#import "parts/common.ftlh" as c>
+<#import "parts/pager.ftlh" as p>
 <@c.page>
     <div class="form-row">
         <div class="form-group">
@@ -11,7 +12,7 @@
             </form>
         </div>
     </div>
-    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+    <a class="btn btn-primary mb-2" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
        aria-controls="collapseExample">
         Добавить новую книжку
     </a>
@@ -67,40 +68,48 @@
             </form>
         </div>
     </div>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-    <#list books as book>
-        <div class="col">
-            <form method="post" action="/remove">
-                <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-                <input type="hidden" name="bookId" value="${book.getId()}">
-                <button type="submit" class="btn btn-outline-primary mt-3">Удалить</button>
-            </form>
-            <div class="card">
-                <#if book.filename??>
-                    <img class="card-img-top" src="../img/${book.getFilename()}" alt="Card image cap">
-                </#if>
-                <form method="post" action="/" enctype="multipart/form-data">
-                    <div class="card-body">
-                        <h5 class="card-title">${book.getName()}</h5>
-                        <p class="card-text">Автор: ${book.getAuthor()}</p>
-                        <ul class="list-group list-group-flush">
-                            <label class="list-group-item">Цена:
-                                <input class="form-control col-md-20" type="number" name="price" min="0"
-                                       value="${book.getPrice()}"/>
-                            </label>
-                            <label class="list-group-item">Количество:
-                                <input class="form-control col-md-15" type="number" name="quantity" min="0"
-                                       value="${book.getQuantity()}"/>
-                            </label>
-                        </ul>
+    <@p.pager url books/>
+    <table class="table table-borderless table-hover">
+        <thead class="thead-light">
+        <tr>
+            <th>Название книги</th>
+            <th>Автор</th>
+            <th>Цена</th>
+            <th>Количество</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <#list books.content as book>
+            <tr>
+                <td>${book.getName()}</td>
+                <td>${book.getAuthor()}</td>
+                <form method="post" action="/">
+                    <td>
+                        <input class="form-control col-md-20" type="number" name="price" min="0"
+                               value="${book.getPricetoString()}"/>
+                    </td>
+                    <td>
+                        <input class="form-control col-md-15" type="number" name="quantity" min="0" max="40000"
+                               value="${book.getQuantity()}"/>
+                    </td>
+                    <th>
+                        <input type="hidden" name="_csrf" value="${_csrf.token}"/>
+                        <input type="hidden" name="bookId" value=${book.getID()}>
+                        <button type="submit" class="btn btn-link">Редактировать</button>
+                    </th>
+                </form>
+                <th>
+                    <form method="post" action="/remove">
                         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
                         <input type="hidden" name="bookId" value="${book.getId()}">
-                        <button type="submit" class="btn btn-primary mt-3">Edit</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    <#else>
-        No books
-    </#list>
+                        <button type="submit" class="btn btn-link">Удалить</button>
+                    </form>
+                </th>
+            </tr>
+        </#list>
+        </tbody>
+    </table>
+    <@p.pager url books/>
 </@c.page>
