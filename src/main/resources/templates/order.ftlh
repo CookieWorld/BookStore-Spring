@@ -10,13 +10,15 @@
             <th>Заказанные книги</th>
             <th>Цена</th>
             <th>Сумма заказа</th>
+            <th>Статус заказа</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
         <tr>
             <td>${orders.getDate()}</td>
             <td>${orders.getUser().getUsername()}
-            <br><a href="/orders/${orders.getUser().getId()}">Посмотреть все заказы пользователя</a>
+                <br><a href="/orders/${orders.getUser().getId()}">Посмотреть все заказы пользователя</a>
             </td>
             <td>
                 <#list orders.getOrderLines() as o>
@@ -33,16 +35,28 @@
                 </#list>
             </td>
             <td>
-                <div class = "d-flex flex-column justify-content-start align-items-center">
-                <#list orders.getOrderLines() as o>
-                    <div class="d-flex flex-column justify-content-start">
-                        <p>${o.getPrice()}</p>
-                        <br>
-                    </div>
-                </#list>
+                <div class="d-flex flex-column justify-content-start align-items-center">
+                    <#list orders.getOrderLines() as o>
+                        <div class="d-flex flex-column justify-content-start">
+                            <p>${o.getPrice()}</p>
+                            <br>
+                        </div>
+                    </#list>
                 </div>
             </td>
             <td>${orders.getTotalPrice()}</td>
+            <td>${orders.getStatus().name()}</td>
+            <td>
+                <#if order.getStatus().ordinal() == 0>
+                    <a href="/order/confirm/${order.getID()}">Подтвердить</a>
+                <#elseif order.getStatus().ordinal() == 1>
+                    <a href="/order/finish/${order.getID()}">Оформить</a>
+                </#if>
+                <#if order.getStatus().ordinal() lt 2>
+                    <br>
+                    <a href="/order/cancel/${order.getID()}?profile=false&userId=${order.getUser().getId()}">Отменить</a>
+                </#if>
+            </td>
         </tr>
         </tbody>
     </table>

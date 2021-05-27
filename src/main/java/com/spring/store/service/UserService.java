@@ -1,10 +1,8 @@
 package com.spring.store.service;
 
 import com.spring.store.exceptions.UserNotFoundExecption;
-import com.spring.store.model.Order;
 import com.spring.store.model.Role;
 import com.spring.store.model.User;
-import com.spring.store.repos.OrderRepo;
 import com.spring.store.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,9 +24,6 @@ public class UserService implements UserDetailsService {
     private UserRepo userRepo;
 
     @Autowired
-    private OrderRepo orderRepo;
-
-    @Autowired
     private MailSender mailSender;
 
     @Autowired
@@ -47,6 +42,10 @@ public class UserService implements UserDetailsService {
         if (userFromDB != null) {
             return false;
         }
+        userFromDB = userRepo.findByEmail(user.getEmail());
+        if (userFromDB != null) {
+            return false;
+        }
         user.setActive(false);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
@@ -61,7 +60,7 @@ public class UserService implements UserDetailsService {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = "<h1>Здравствуйте, " + user.getUsername() + "!</h1>\n" +
                     "<p>Добро пожаловать на сайт <b>Book store</b> :). Пожалуйста, перейдите по ссылке, чтобы активировать аккаунт</p>" +
-                    "<a href=\"http://localhost:8080/activate/" + user.getActivationCode() + "\"</a>http://localhost:8080/activate/" + user.getActivationCode() + "</a>";
+                    "<a href=\"http://localhost:8080/activate/" + user.getActivationCode() + "\">http://localhost:8080/activate/" + user.getActivationCode() + "</a>";
             mailSender.send(user.getEmail(), "Activation code", message);
         }
     }
@@ -93,6 +92,10 @@ public class UserService implements UserDetailsService {
 
     public List<User> findAll() {
         return userRepo.findAll();
+    }
+
+    public List<User> findAllExceptMySelf(Long id) {
+        return userRepo.findByIdNot(id);
     }
 
     public void saveUser(User user, String username, Boolean active, Map<String, String> form) {
@@ -144,11 +147,6 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public List<Order> getOrders(User user) {
-        List<Order> allByUser = orderRepo.findAllByUser(user);
-        return allByUser;
-    }
-
     public void updateResetPasswordToken(String token, String email) throws UserNotFoundExecption {
         User user = userRepo.findByEmail(email);
         if (user != null) {
@@ -172,10 +170,21 @@ public class UserService implements UserDetailsService {
         userRepo.save(user);
     }
 
-    public Iterable<Order> getOrdersList(){
-        Iterable<Order> orders = orderRepo.findAll();
-        return orders;
+    public void updateConfirmOrderToken(String token, String email) throws UserNotFoundExecption {
+        User user = userRepo.findByEmail(email);
+        if (user != null) {
+            user.setConfirmOrderToken(token);
+            userRepo.save(user);
+        } else {
+            throw new UserNotFoundExecption("Пользователя с такой почтой " + email + " не найден");
+        }
     }
 
+    public User getByConfirmOrderToken(String token) {
+        return userRepo.findByConfirmOrderToken(token);
+    }
 
+    public void deleteUser(Long id) {
+        userRepo.deleteById(id);
+    }
 }

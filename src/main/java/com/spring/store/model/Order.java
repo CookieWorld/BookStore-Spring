@@ -20,12 +20,18 @@ public class Order {
 
     private Status status = Status.Создан;
 
+    private String trackCode;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @OneToMany(mappedBy = "order")
     Set<OrderLine> orderLines;
+
+    public String getID() {
+        return String.valueOf(id);
+    }
 
     public Long getId() {
         return id;
@@ -65,5 +71,21 @@ public class Order {
 
     public void setTotalPrice(Integer totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public String getTrackCode() {
+        return trackCode;
+    }
+
+    public void setTrackCode(String trackCode) {
+        this.trackCode = trackCode;
     }
 }

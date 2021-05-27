@@ -31,7 +31,7 @@ public class CartService {
     @Autowired
     private MailSender mailSender;
 
-    public void order(User user) throws MessagingException, UnsupportedEncodingException {
+    public Order order(User user) throws MessagingException, UnsupportedEncodingException {
         Set<CartLine> cartLines = cart.getCartLineList();
         Order order = new Order();
         Set<OrderLine> orderLines = new HashSet<>();
@@ -51,30 +51,35 @@ public class CartService {
         for (OrderLine o : orderLines) {
             orderLineRepo.save(o);
         }
-        sendMessage(user, order);
         cart.setTotalPrice(0);
         cart.setCartLineList(new HashSet<>());
+        return order;
     }
 
-    public boolean checkout(Integer quantity, Book book, CartLine cartLine) {
-        if (cartLine.getQuantity() + quantity <= book.getQuantity()) {
-            int quantityBook = cartLine.getQuantity() + quantity;
-            cart.setTotalPrice(cart.getTotalPrice() - (cartLine.getQuantity() * book.getPrice()) + (quantityBook * book.getPrice()));
-            cartLine.setQuantity(quantityBook);
-            return true;
-        } else return false;
+    public boolean checkQuantity(Integer quantity, Book book, CartLine cartLine) {
+        return cartLine.getQuantity() + quantity <= book.getQuantity();
     }
 
-    public void sendMessage(User user, Order order) throws MessagingException, UnsupportedEncodingException {
+    public void processQuantity(Integer quantity, Book book, CartLine cartLine) {
+        int quantityBook = cartLine.getQuantity() + quantity;
+        cart.setTotalPrice(cart.getTotalPrice() - (cartLine.getQuantity() * book.getPrice()) + (quantityBook * book.getPrice()));
+        cartLine.setQuantity(quantityBook);
+    }
+
+    public void sendMessage(User user, Order order, String token) throws MessagingException, UnsupportedEncodingException {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
                     "<h1>Здравствуйте, %s! </h1>\n" +
-                            "<p><h3>Заказ №%s от %s оформлен!</h3></p>",
+                            "<p><h3>Заказ №%s от %s создан!</h3></p>" +
+                            "<p>Вам необходимо подтвердить заказ. Перейдите по ссылке для подтверждения заказа:" +
+                            "<a href = \"http://localhost:8080/confirm?token=%s&orderId=%s\">Подтвердить заказ</a></p>",
                     user.getUsername(),
                     order.getId(),
-                    order.getDate()
+                    order.getDate(),
+                    token,
+                    order.getID()
             );
-            mailSender.send(user.getEmail(), "Заказ оформлен", message);
+            mailSender.send(user.getEmail(), "Заказ создан", message);
         }
     }
 

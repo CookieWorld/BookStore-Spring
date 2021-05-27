@@ -1,7 +1,15 @@
 <#include "parts/security.ftlh">
 <#import "parts/common.ftlh" as c>
 <@c.page>
-    <h2>Корзина</h2>
+    <div class="d-flex justify-content-between">
+        <h2>Корзина</h2>
+        <a class="btn btn-primary mb-2" href="/cart/clear">Очистить корзину</a>
+    </div>
+    <#if message??>
+        <div>
+            <p class="text-warning">${message}</p>
+        </div>
+    </#if>
     <table class="table">
         <thead>
         <tr>

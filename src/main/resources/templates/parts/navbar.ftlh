@@ -22,7 +22,7 @@
                     <a class="nav-link" href="/user">Список пользователей</a>
                 </li>
             </#if>
-            <#if isAdmin = true>
+            <#if isAdmin = true || isManager = true>
                 <li class="nav-item active">
                     <a class="nav-link" href="/orderList">Список заказов</a>
                 </li>
@@ -36,9 +36,9 @@
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
         </form>
         <#if user??>
-            <div class="navbar-text ml-3"><a class="nav-link" href="user/profile">${name}</a></div>
+            <div class="navbar-text ml-3"><a class="nav-link" href="/user/profile">${name}</a></div>
         </#if>
-        <#if name=="Guest">
+        <#if name=="Гость">
             <form action="/login">
                 <div><input class="btn btn-primary ml-3" type="submit" value="Войти"/></div>
             </form>

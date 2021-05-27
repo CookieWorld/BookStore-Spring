@@ -28,16 +28,6 @@ public class Book {
 
     private String filename;
 
-    public Book() {
-    }
-
-    public Book(String name, String author, Integer price, Integer quantity) {
-        this.name = name;
-        this.author = author;
-        this.price = price;
-        this.quantity = quantity;
-    }
-
     public String getFilename() {
         return filename;
     }
@@ -58,7 +48,7 @@ public class Book {
         return String.valueOf(id);
     }
 
-    public String getPricetoString() {
+    public String getPriceToString() {
         return String.valueOf(price);
     }
 

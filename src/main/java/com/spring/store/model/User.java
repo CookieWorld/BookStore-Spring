@@ -47,6 +47,10 @@ public class User implements UserDetails {
     private Set<Role> roles;
 
     private String resetPasswordToken;
+    private String confirmOrderToken;
+
+    public User() {
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -56,6 +60,11 @@ public class User implements UserDetails {
     public boolean isAdmin() {
         return roles.contains(Role.ADMIN);
     }
+
+    public boolean isManager() {
+        return roles.contains(Role.MANAGER);
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -178,5 +187,13 @@ public class User implements UserDetails {
 
     public void setResetPasswordToken(String resetPasswordToken) {
         this.resetPasswordToken = resetPasswordToken;
+    }
+
+    public String getConfirmOrderToken() {
+        return confirmOrderToken;
+    }
+
+    public void setConfirmOrderToken(String confirmOrderToken) {
+        this.confirmOrderToken = confirmOrderToken;
     }
 }

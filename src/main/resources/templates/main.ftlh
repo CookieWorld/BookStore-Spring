@@ -88,7 +88,7 @@
                 <form method="post" action="/">
                     <td>
                         <input class="form-control col-md-20" type="number" name="price" min="0"
-                               value="${book.getPricetoString()}"/>
+                               value="${book.getPriceToString()}"/>
                     </td>
                     <td>
                         <input class="form-control col-md-15" type="number" name="quantity" min="0" max="40000"

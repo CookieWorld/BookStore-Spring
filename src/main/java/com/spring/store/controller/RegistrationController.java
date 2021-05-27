@@ -41,7 +41,7 @@ public class RegistrationController {
             @Valid User user,
             BindingResult bindingResult,
             Model model) throws MessagingException, UnsupportedEncodingException {
-        boolean isConfirmEmpty = StringUtils.isEmpty(passwordConfirm);
+        boolean isConfirmEmpty = passwordConfirm.isBlank();
 
         if (isConfirmEmpty) {
             model.addAttribute("password2Error", "Подтверждение пароля не может быть пустым");
@@ -60,11 +60,15 @@ public class RegistrationController {
             return "registration";
         }
         if (!userService.addUser(user)) {
-            model.addAttribute("message", "Пользователь существует!");
+            model.addAttribute("messageType", "danger");
+            model.addAttribute("message", "Пользователь c таким логином/почтой уже существует!");
             return "registration";
         }
 
-        return "redirect:/login";
+        model.addAttribute("messageType", "success");
+        model.addAttribute("message", "Подтвердите свою почту, перейдя по ссылке в письме");
+
+        return "login";
     }
 
     @GetMapping("/activate/{code}")

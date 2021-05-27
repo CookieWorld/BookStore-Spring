@@ -24,18 +24,18 @@
                 <td>${user.getId()}</td>
                 <td>
                     <#if user.isActive()>
-                        YES
+                        Да
                         <#else>
-                        NO
+                        Нет
                     </#if>
                 </td>
-                <td>${user.username!"not found"}</td>
-                <td>${user.firstName!"not found"}</td>
-                <td>${user.lastName!"not found"}</td>
-                <td>${user.phone!"not found"}</td>
-                <td>${user.email!"not found"}</td>
-                <td>${user.address!"not found"}</td>
-                <td>${user.country!"not found"}</td>
+                <td>${user.username!"не найдено"}</td>
+                <td>${user.firstName!"не найдено"}</td>
+                <td>${user.lastName!"не найдено"}</td>
+                <td>${user.phone!"не найдено"}</td>
+                <td>${user.email!"не найдено"}</td>
+                <td>${user.address!"не найдено"}</td>
+                <td>${user.country!"не найдено"}</td>
                 <td>
                     <#list user.roles as role>
                         ${role} <#sep>,
@@ -43,6 +43,7 @@
                 </td>
                 <td>
                     <a href="/user/${user.id}">Редактировать</a>
+                    <a href="/user/delete/${user.id}">Удалить</a>
                 </td>
             </tr>
         </#list>

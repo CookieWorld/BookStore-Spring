@@ -1,12 +1,12 @@
 package com.spring.store.controller;
 
-import com.spring.store.model.Book;
-import com.spring.store.model.Cart;
-import com.spring.store.model.CartLine;
-import com.spring.store.model.User;
+import com.spring.store.exceptions.UserNotFoundExecption;
+import com.spring.store.model.*;
 import com.spring.store.repos.BookRepo;
 import com.spring.store.repos.UserRepo;
 import com.spring.store.service.CartService;
+import com.spring.store.service.UserService;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,6 +28,9 @@ import java.util.Set;
 public class CartController {
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private Cart cart;
@@ -44,7 +48,7 @@ public class CartController {
     }
 
     @PostMapping("/addToCart")
-    public String addToCart(Long id, Integer quantity) {
+    public String addToCart(Long id, Integer quantity, Model model) {
         Optional<Book> byId = bookRepo.findById(id);
         if (byId.isPresent()) {
             Book book = byId.get();
@@ -56,9 +60,13 @@ public class CartController {
 
             for (CartLine c : cartLines) {
                 if (c.getBook().getId().equals(id)) {
-                    if (cartService.checkout(quantity, book, c)) return "redirect:/cart";
-                    else {
+                    if (cartService.checkQuantity(quantity, book, c)) {
+                        cartService.processQuantity(quantity, book, c);
                         return "redirect:/cart";
+                    } else {
+                        model.addAttribute("message", "На складе не хватает книг \"" + book.getName() +
+                                "\". Доступное количество " + book.getQuantity());
+                        return cart(model);
                     }
                 }
             }
@@ -87,17 +95,32 @@ public class CartController {
     @PostMapping("/editQuantity")
     public String quantityUpdate(
             @RequestParam Integer quantity,
-            @RequestParam Long id) {
+            @RequestParam Long id,
+            Model model) {
         Optional<Book> byId = bookRepo.findById(id);
         if (byId.isPresent()) {
             Book book = byId.get();
             Set<CartLine> cartLines = cart.getCartLineList();
             for (CartLine c : cartLines) {
                 if (c.getBook().getId().equals(id)) {
-                    if (cartService.checkout(quantity - c.getQuantity(), book, c)) return "redirect:/cart";
+                    if (cartService.checkQuantity(quantity - c.getQuantity(), book, c)) {
+                        cartService.processQuantity(quantity - c.getQuantity(), book, c);
+                        return "redirect:/cart";
+                    } else {
+                        model.addAttribute("message", "На складе не хватает книг \"" + book.getName() +
+                                "\". Доступное количество " + book.getQuantity());
+                        return cart(model);
+                    }
                 }
             }
         }
+        return "redirect:/cart";
+    }
+
+    @GetMapping("/clear")
+    public String clear() {
+        cart.setTotalPrice(0);
+        cart.setCartLineList(new HashSet<>());
         return "redirect:/cart";
     }
 
@@ -107,16 +130,22 @@ public class CartController {
             @RequestParam("userId") User user,
             @RequestParam(required = false, defaultValue = "false") Boolean save,
             @RequestParam String country,
-            @RequestParam String address) throws MessagingException, UnsupportedEncodingException {
-        cartService.order(user);
-        if(save) {
+            @RequestParam String address,
+            Model model) throws MessagingException, UnsupportedEncodingException, UserNotFoundExecption {
+        Order order = cartService.order(user);
+
+        String token = RandomString.make(30);
+        userService.updateConfirmOrderToken(token, user.getEmail());
+        cartService.sendMessage(user, order, token);
+
+        if (save) {
             Optional<User> userById = userRepo.findById(user.getId());
             User user1 = userById.get();
             user1.setCountry(country);
             user1.setAddress(address);
             userRepo.save(user1);
         }
-        return "redirect:/cart";
+        model.addAttribute("message", "Подтвердите свой заказ на почте");
+        return "cart";
     }
-
 }
