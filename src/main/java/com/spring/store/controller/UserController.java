@@ -6,12 +6,10 @@ import com.spring.store.model.User;
 import com.spring.store.service.OrderService;
 import com.spring.store.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
@@ -22,11 +20,14 @@ import java.util.Map;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final OrderService orderService;
 
     @Autowired
-    private OrderService orderService;
+    public UserController(UserService userService, OrderService orderService) {
+        this.userService = userService;
+        this.orderService = orderService;
+    }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
@@ -73,6 +74,7 @@ public class UserController {
         userService.updateProfile(user, email, password, phone);
         return "redirect:/user/profile";
     }
+
     @GetMapping("/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);

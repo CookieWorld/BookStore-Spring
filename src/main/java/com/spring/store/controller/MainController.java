@@ -4,7 +4,6 @@ import com.spring.store.model.Book;
 import com.spring.store.model.OrderLine;
 import com.spring.store.repos.BookRepo;
 import com.spring.store.repos.OrderLineRepo;
-import com.spring.store.repos.OrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -29,14 +28,17 @@ import java.util.UUID;
 
 @Controller
 public class MainController {
-    @Autowired
-    private BookRepo bookRepo;
-
-    @Autowired
-    private OrderLineRepo orderLineRepo;
+    private final BookRepo bookRepo;
+    private final OrderLineRepo orderLineRepo;
 
     @Value("${upload.path}")
     private String uploadPath;
+
+    @Autowired
+    public MainController(BookRepo bookRepo, OrderLineRepo orderLineRepo) {
+        this.bookRepo = bookRepo;
+        this.orderLineRepo = orderLineRepo;
+    }
 
     @GetMapping("/")
     public String index(@PageableDefault(sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable, Model model) {
@@ -79,7 +81,7 @@ public class MainController {
     @PostMapping("/remove")
     public String remove(@RequestParam("bookId") Book book) {
         List<OrderLine> allOrderLinesByBookId = orderLineRepo.findAllByBook_Id(book.getId());
-        for(OrderLine orderLine : allOrderLinesByBookId) {
+        for (OrderLine orderLine : allOrderLinesByBookId) {
             orderLine.setAuthor(book.getAuthor());
             orderLine.setName(book.getName());
             orderLine.setPrice(book.getPrice());
