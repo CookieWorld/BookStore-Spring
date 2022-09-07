@@ -14,11 +14,15 @@ import java.io.UnsupportedEncodingException;
 
 @Service
 public class MailSender {
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
     private String username;
+
+    @Autowired
+    public MailSender(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     public void send(String emailTo, String subject, String message) throws MessagingException, UnsupportedEncodingException {
         MimeMessage mailMessage = mailSender.createMimeMessage();

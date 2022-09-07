@@ -20,18 +20,22 @@ import java.util.List;
 
 @Controller
 public class OrderController {
-    @Autowired
-    OrderService orderService;
+    private final OrderService orderService;
+    private final UserService userService;
 
     @Autowired
-    UserService userService;
+    public OrderController(OrderService orderService, UserService userService) {
+        this.orderService = orderService;
+        this.userService = userService;
+    }
 
     @GetMapping("/order/cancel/{orderId}")
-    public String cancel(@PathVariable("orderId") Long orderId, @RequestParam("profile") boolean isProfile, @RequestParam(value = "userId", required = false) Long userId ) throws MessagingException, UnsupportedEncodingException {
+    public String cancel(@PathVariable("orderId") Long orderId, @RequestParam("profile") boolean isProfile, @RequestParam(value = "userId", required = false) Long userId) throws MessagingException, UnsupportedEncodingException {
         orderService.cancel(orderId);
         if (isProfile) {
             return "redirect:/user/profile";
-        } return "redirect:/orders/" + userId;
+        }
+        return "redirect:/orders/" + userId;
     }
 
     @PostMapping("/order/send")

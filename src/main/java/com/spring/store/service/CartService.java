@@ -16,20 +16,20 @@ import java.util.Set;
 
 @Service
 public class CartService {
-    @Autowired
-    private Cart cart;
+    private final Cart cart;
+    private final BookRepo bookRepo;
+    private final OrderRepo orderRepo;
+    private final OrderLineRepo orderLineRepo;
+    private final MailSender mailSender;
 
     @Autowired
-    private BookRepo bookRepo;
-
-    @Autowired
-    private OrderRepo orderRepo;
-
-    @Autowired
-    private OrderLineRepo orderLineRepo;
-
-    @Autowired
-    private MailSender mailSender;
+    public CartService(Cart cart, BookRepo bookRepo, OrderRepo orderRepo, OrderLineRepo orderLineRepo, MailSender mailSender) {
+        this.cart = cart;
+        this.bookRepo = bookRepo;
+        this.orderRepo = orderRepo;
+        this.orderLineRepo = orderLineRepo;
+        this.mailSender = mailSender;
+    }
 
     public Order order(User user) throws MessagingException, UnsupportedEncodingException {
         Set<CartLine> cartLines = cart.getCartLineList();
@@ -77,7 +77,7 @@ public class CartService {
                     order.getId(),
                     order.getDate(),
                     token,
-                    order.getID()
+                    order.getId()
             );
             mailSender.send(user.getEmail(), "Заказ создан", message);
         }

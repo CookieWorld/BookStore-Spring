@@ -14,18 +14,21 @@ import java.util.List;
 
 @Service
 public class OrderService {
-    @Autowired
-    private OrderRepo orderRepo;
+    private final OrderRepo orderRepo;
+    private final MailSender mailSender;
 
     @Autowired
-    private MailSender mailSender;
+    public OrderService(OrderRepo orderRepo, MailSender mailSender) {
+        this.orderRepo = orderRepo;
+        this.mailSender = mailSender;
+    }
 
     public List<Order> getOrders(User user) {
         List<Order> allByUser = orderRepo.findAllByUser(user);
         return allByUser;
     }
 
-    public Iterable<Order> getOrdersList(){
+    public Iterable<Order> getOrdersList() {
         Iterable<Order> orders = orderRepo.findAll();
         return orders;
     }
@@ -64,13 +67,13 @@ public class OrderService {
         if (!StringUtils.isEmpty(order.getUser().getEmail())) {
             String message = String.format(
                     "<h1>Здравствуйте, %s! </h1>\n" +
-                    "<p><h3>Ваш заказ №%s от %s %s!</h3></p>",
+                            "<p><h3>Ваш заказ №%s от %s %s!</h3></p>",
                     order.getUser().getUsername(),
-                    order.getID(),
+                    order.getId(),
                     order.getDate(),
                     info
             );
-            mailSender.send(order.getUser().getEmail(), "Заказ " + info , message);
+            mailSender.send(order.getUser().getEmail(), "Заказ " + info, message);
         }
     }
 

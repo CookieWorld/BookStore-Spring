@@ -26,20 +26,20 @@ import java.util.Set;
 @Controller
 @RequestMapping("/cart")
 public class CartController {
-    @Autowired
-    private CartService cartService;
+    private final CartService cartService;
+    private final UserService userService;
+    private final Cart cart;
+    private final BookRepo bookRepo;
+    private final UserRepo userRepo;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private Cart cart;
-
-    @Autowired
-    private BookRepo bookRepo;
-
-    @Autowired
-    private UserRepo userRepo;
+    public CartController(CartService cartService, UserService userService, Cart cart, BookRepo bookRepo, UserRepo userRepo) {
+        this.cartService = cartService;
+        this.userService = userService;
+        this.cart = cart;
+        this.bookRepo = bookRepo;
+        this.userRepo = userRepo;
+    }
 
     @GetMapping
     public String cart(Model model) {
@@ -64,8 +64,7 @@ public class CartController {
                         cartService.processQuantity(quantity, book, c);
                         return "redirect:/cart";
                     } else {
-                        model.addAttribute("message", "На складе не хватает книг \"" + book.getName() +
-                                "\". Доступное количество " + book.getQuantity());
+                        model.addAttribute("message", "На складе не хватает книг \"" + book.getName() + "\". Доступное количество " + book.getQuantity());
                         return cart(model);
                     }
                 }
@@ -93,10 +92,7 @@ public class CartController {
     }
 
     @PostMapping("/editQuantity")
-    public String quantityUpdate(
-            @RequestParam Integer quantity,
-            @RequestParam Long id,
-            Model model) {
+    public String quantityUpdate(@RequestParam Integer quantity, @RequestParam Long id, Model model) {
         Optional<Book> byId = bookRepo.findById(id);
         if (byId.isPresent()) {
             Book book = byId.get();
@@ -107,8 +103,7 @@ public class CartController {
                         cartService.processQuantity(quantity - c.getQuantity(), book, c);
                         return "redirect:/cart";
                     } else {
-                        model.addAttribute("message", "На складе не хватает книг \"" + book.getName() +
-                                "\". Доступное количество " + book.getQuantity());
+                        model.addAttribute("message", "На складе не хватает книг \"" + book.getName() + "\". Доступное количество " + book.getQuantity());
                         return cart(model);
                     }
                 }
@@ -126,12 +121,7 @@ public class CartController {
 
     @Transactional
     @PostMapping("/order")
-    public String order(
-            @RequestParam("userId") User user,
-            @RequestParam(required = false, defaultValue = "false") Boolean save,
-            @RequestParam String country,
-            @RequestParam String address,
-            Model model) throws MessagingException, UnsupportedEncodingException, UserNotFoundExecption {
+    public String order(@RequestParam("userId") User user, @RequestParam(required = false, defaultValue = "false") Boolean save, @RequestParam String country, @RequestParam String address, Model model) throws MessagingException, UnsupportedEncodingException, UserNotFoundExecption {
         Order order = cartService.order(user);
 
         String token = RandomString.make(30);

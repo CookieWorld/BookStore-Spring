@@ -20,14 +20,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
+    private final MailSender mailSender;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private MailSender mailSender;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserService(UserRepo userRepo, MailSender mailSender, PasswordEncoder passwordEncoder) {
+        this.userRepo = userRepo;
+        this.mailSender = mailSender;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -69,9 +71,9 @@ public class UserService implements UserDetailsService {
         if (!StringUtils.isEmpty(email)) {
             String message = String.format(
                     "<h3>Здравствуйте!</h3> " +
-                    "<p>Вы запрашивали смену пароля</p>" +
-                    "<p><a href=\"http://localhost:8080/reset_password?token=" + token + "\"<b>Поменять пароль</b></a></p>" +
-                    "<p>Игнорируйте это письмо, если вы не запрашивали смену пароля.</p>"
+                            "<p>Вы запрашивали смену пароля</p>" +
+                            "<p><a href=\"http://localhost:8080/reset_password?token=" + token + "\"<b>Поменять пароль</b></a></p>" +
+                            "<p>Игнорируйте это письмо, если вы не запрашивали смену пароля.</p>"
             );
             mailSender.send(email, "Смена пароля", message);
         }
