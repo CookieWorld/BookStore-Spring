@@ -1,6 +1,6 @@
 package com.spring.store.repos;
 
-import com.spring.store.model.OrderLine;
+import com.spring.store.entity.OrderLine;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.spring.store.repos;
 
-import com.spring.store.model.Order;
-import com.spring.store.model.User;
+import com.spring.store.entity.Order;
+import com.spring.store.entity.User;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

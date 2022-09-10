@@ -1,5 +1,6 @@
-package com.spring.store.model;
+package com.spring.store.entity;
 
+import com.spring.store.model.Role;
 import com.spring.store.validator.ValidPhoneNumber;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -82,21 +83,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isActive();
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

@@ -1,5 +1,6 @@
 package com.spring.store.model;
 
+import com.spring.store.entity.Book;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;

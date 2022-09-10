@@ -1,5 +1,7 @@
-package com.spring.store.model;
+package com.spring.store.entity;
 
+import com.spring.store.entity.Book;
+import com.spring.store.entity.Order;
 import com.sun.istack.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
