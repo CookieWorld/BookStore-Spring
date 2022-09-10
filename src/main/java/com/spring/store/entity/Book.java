@@ -1,4 +1,4 @@
-package com.spring.store.model;
+package com.spring.store.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

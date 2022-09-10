@@ -2,14 +2,9 @@ package com.spring.store.service;
 
 import com.spring.store.exceptions.UserNotFoundExecption;
 import com.spring.store.model.Role;
-import com.spring.store.model.User;
+import com.spring.store.entity.User;
 import com.spring.store.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -19,25 +14,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
     private final UserRepo userRepo;
     private final MailSender mailSender;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepo userRepo, MailSender mailSender, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepo userRepo, MailSender mailSender) {
         this.userRepo = userRepo;
         this.mailSender = mailSender;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
+    /*@Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByUsername(username);
         if (user == null) throw new IllegalArgumentException("Пользователь не найден");
         if (!user.isActive()) throw new IllegalArgumentException("Пользователь не активирован");
         return user;
-    }
+    }*/
 
     public boolean addUser(User user) throws MessagingException, UnsupportedEncodingException {
         User userFromDB = userRepo.findByUsername(user.getUsername());
@@ -51,7 +44,7 @@ public class UserService implements UserDetailsService {
         user.setActive(false);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        //user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
 
         sendMessage(user);
@@ -135,9 +128,9 @@ public class UserService implements UserDetailsService {
             }
         }
 
-        if (isPasswordChanged && !StringUtils.isEmpty(password)) {
+        /*if (isPasswordChanged && !StringUtils.isEmpty(password)) {
             user.setPassword(passwordEncoder.encode(password));
-        }
+        }*/
 
         if (isPhoneChanged) {
             user.setPhone(phone);
@@ -164,9 +157,9 @@ public class UserService implements UserDetailsService {
     }
 
     public void updatePassword(User user, String newPassword) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        /*BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(newPassword);
-        user.setPassword(encodedPassword);
+        user.setPassword(encodedPassword);*/
 
         user.setResetPasswordToken(null);
         userRepo.save(user);

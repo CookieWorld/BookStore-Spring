@@ -1,8 +1,8 @@
 package com.spring.store.service;
 
-import com.spring.store.model.Order;
+import com.spring.store.entity.Order;
 import com.spring.store.model.Status;
-import com.spring.store.model.User;
+import com.spring.store.entity.User;
 import com.spring.store.repos.OrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

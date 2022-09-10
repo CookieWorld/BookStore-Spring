@@ -1,5 +1,6 @@
-package com.spring.store.model;
+package com.spring.store.entity;
 
+import com.spring.store.model.Status;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

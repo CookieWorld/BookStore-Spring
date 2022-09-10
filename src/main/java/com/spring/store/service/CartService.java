@@ -1,5 +1,9 @@
 package com.spring.store.service;
 
+import com.spring.store.entity.Book;
+import com.spring.store.entity.Order;
+import com.spring.store.entity.OrderLine;
+import com.spring.store.entity.User;
 import com.spring.store.model.*;
 import com.spring.store.repos.BookRepo;
 import com.spring.store.repos.OrderLineRepo;
