@@ -1,13 +1,12 @@
+/*
 package com.spring.store.controller;
 
-import com.spring.store.model.Order;
+import com.spring.store.entity.Order;
 import com.spring.store.model.Role;
-import com.spring.store.model.User;
+import com.spring.store.entity.User;
 import com.spring.store.service.OrderService;
 import com.spring.store.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,14 +28,16 @@ public class UserController {
         this.orderService = orderService;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
-    public String userList(@AuthenticationPrincipal User user, Model model) {
+    public String userList(*/
+/*@AuthenticationPrincipal*//*
+ User user, Model model) {
         model.addAttribute("users", userService.findAllExceptMySelf(user.getId()));
         return "userList";
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{user}")
     public String userEditForm(@PathVariable User user, Model model) {
         model.addAttribute("user", user);
@@ -44,7 +45,7 @@ public class UserController {
         return "userEdit";
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public String userSave(
             @RequestParam String username,
@@ -56,7 +57,9 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public String getProfile(Model model, @AuthenticationPrincipal User user) {
+    public String getProfile(Model model, */
+/*@AuthenticationPrincipal*//*
+ User user) {
         model.addAttribute("username", user.getUsername());
         model.addAttribute("email", user.getEmail());
         model.addAttribute("phone", user.getPhone());
@@ -67,7 +70,9 @@ public class UserController {
 
     @PostMapping("/profile")
     public String updateProfile(
-            @AuthenticationPrincipal User user,
+            */
+/*@AuthenticationPrincipal*//*
+ User user,
             @RequestParam String email,
             @RequestParam String password,
             @RequestParam String phone) throws MessagingException, UnsupportedEncodingException {
@@ -81,3 +86,4 @@ public class UserController {
         return "redirect:/user";
     }
 }
+*/

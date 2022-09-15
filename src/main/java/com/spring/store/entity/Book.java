@@ -20,7 +20,7 @@ public class Book {
     @Length(min = 2, message = "Название книги должно быть не меньше 2-ух символов")
     private String name;
     @NotBlank(message = "Поле не может быть пустым")
-    private String author;
+    private String authorB;
 
     @Min(value = 1, message = "Цена должна быть больше нуля")
     private Integer price;
