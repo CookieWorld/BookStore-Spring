@@ -1,15 +1,13 @@
 package com.spring.store.controller;
 
-import com.spring.store.model.Book;
-import com.spring.store.model.OrderLine;
+import com.spring.store.entity.Book;
+import com.spring.store.entity.OrderLine;
+import com.spring.store.entity.User;
 import com.spring.store.repos.BookRepo;
 import com.spring.store.repos.OrderLineRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,18 +19,17 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-@Controller
+@Controller("/")
 public class MainController {
     private final BookRepo bookRepo;
     private final OrderLineRepo orderLineRepo;
 
     @Value("${upload.path}")
     private String uploadPath;
+    @Value("${spring.profiles.active}")
+    private String profile;
 
     @Autowired
     public MainController(BookRepo bookRepo, OrderLineRepo orderLineRepo) {
@@ -40,53 +37,54 @@ public class MainController {
         this.orderLineRepo = orderLineRepo;
     }
 
-    @GetMapping("/")
-    public String index(@PageableDefault(sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable, Model model) {
+    @GetMapping
+    public String main(Model model, @AuthenticationPrincipal User user) {
+        HashMap<Object, Object> data = new HashMap<>();
 
-        Page<Book> books = bookRepo.findAll(pageable);
-        model.addAttribute("books", books);
-        model.addAttribute("url", "/");
+        data.put("profile", user);
+        data.put("books", bookRepo.findAll());
+
+        model.addAttribute("frontData", data);
+        model.addAttribute("isDevMode", "dev".equals(profile));
 
         return "index";
     }
 
-    @GetMapping("/main")
-    public String main(
-            @RequestParam(required = false, defaultValue = "") String filter,
-            @PageableDefault(sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable,
-            Model model) {
-        Page<Book> books;
+    /*@GetMapping("/find/books")
+    public List<Book> main(
+            @RequestParam(required = false, defaultValue = "") String filter) {
+        List<Book> books;
 
         if (!filter.isEmpty()) {
-            books = bookRepo.findByAuthorContainsOrNameContains(filter, filter, pageable);
-        } else books = bookRepo.findAll(pageable);
+            books = bookRepo.findByAuthorBContainsOrNameContains(filter, filter);
+        } else books = bookRepo.findAll();
 
-        model.addAttribute("books", books);
-        model.addAttribute("filter", filter);
-        model.addAttribute("url", "/main");
-
-        return "main";
+        return books;
     }
 
-    @PostMapping("/")
-    public String edit(@RequestParam("bookId") Book book, @RequestParam Integer quantity, @RequestParam Integer price) {
+    @PostMapping("/update")
+    public Book edit(@RequestParam("bookId") Book book, @RequestParam Integer quantity, @RequestParam Integer price) {
         Optional<Book> byId = bookRepo.findById(book.getId());
-        Book book1 = byId.get();
+
+        Book book1 = byId.orElseThrow();
         book1.setQuantity(quantity);
         book1.setPrice(price);
+
         bookRepo.save(book1);
-        return "redirect:/main";
+        return book;
     }
 
     @PostMapping("/remove")
     public String remove(@RequestParam("bookId") Book book) {
         List<OrderLine> allOrderLinesByBookId = orderLineRepo.findAllByBook_Id(book.getId());
+
         for (OrderLine orderLine : allOrderLinesByBookId) {
-            orderLine.setAuthor(book.getAuthor());
+            orderLine.setAuthor(book.getAuthorB());
             orderLine.setName(book.getName());
             orderLine.setPrice(book.getPrice());
             orderLine.setBook(null);
         }
+
         bookRepo.deleteById(book.getId());
         return "redirect:/main";
     }
@@ -94,13 +92,12 @@ public class MainController {
     @GetMapping("/search")
     public String search(
             @RequestParam(required = false, defaultValue = "") String filter,
-            @PageableDefault(sort = {"id"}, direction = Sort.Direction.ASC) Pageable pageable,
             Model model) {
-        Page<Book> books;
+        List<Book> books;
 
         if (!filter.isEmpty()) {
-            books = bookRepo.findByAuthorContainsOrNameContains(filter, filter, pageable);
-        } else books = bookRepo.findAll(pageable);
+            books = bookRepo.findByAuthorBContainsOrNameContains(filter, filter);
+        } else books = bookRepo.findAll();
 
         model.addAttribute("books", books);
         model.addAttribute("url", "/search");
@@ -142,5 +139,5 @@ public class MainController {
         model.addAttribute("books", books);
 
         return "redirect:/main";
-    }
+    }*/
 }

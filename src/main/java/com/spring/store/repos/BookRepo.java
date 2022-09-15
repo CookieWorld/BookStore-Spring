@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface BookRepo extends CrudRepository<Book, Long> {
-    List<Book> findByAuthorContainsOrNameContains(@Param("author") String author, @Param("name") String name);
+    List<Book> findByAuthorBContainsOrNameContains(@Param("authorB") String author, @Param("name") String name);
 
     List<Book> findAll();
 }

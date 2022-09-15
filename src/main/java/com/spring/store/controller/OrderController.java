@@ -1,12 +1,12 @@
+/*
 package com.spring.store.controller;
 
-import com.spring.store.model.Order;
-import com.spring.store.model.User;
+import com.spring.store.entity.Order;
+import com.spring.store.entity.User;
 import com.spring.store.service.OrderService;
 import com.spring.store.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +52,7 @@ public class OrderController {
         return "redirect:/user/profile";
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
+    //@PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
     @GetMapping("/orderList")
     public String listOfOrders(Model model) {
         Iterable<Order> ordersList = orderService.getOrdersList();
@@ -60,14 +60,14 @@ public class OrderController {
         return "orderList";
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
+    //@PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
     @GetMapping("/orderList/{order}")
     public String listOfOrders(@PathVariable Order order, Model model) {
         model.addAttribute("orders", order);
         return "order";
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
+    //@PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
     @GetMapping("/orders/{user}")
     public String listOfOrders(@PathVariable User user, Model model) {
         List<Order> order = orderService.getOrders(user);
@@ -91,3 +91,4 @@ public class OrderController {
         return "confirmOrder";
     }
 }
+*/

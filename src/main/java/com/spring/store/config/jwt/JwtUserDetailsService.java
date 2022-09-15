@@ -3,6 +3,7 @@ package com.spring.store.config.jwt;
 import com.spring.store.entity.User;
 import com.spring.store.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,7 +19,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public JwtUserDetailsService(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+    public JwtUserDetailsService(UserRepo userRepo, @Lazy PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
     }
