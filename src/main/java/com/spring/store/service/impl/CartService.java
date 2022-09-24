@@ -1,4 +1,4 @@
-package com.spring.store.service;
+package com.spring.store.service.impl;
 
 import com.spring.store.entity.Book;
 import com.spring.store.entity.Order;

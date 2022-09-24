@@ -3,11 +3,9 @@ package com.spring.store.config.jwt;
 import com.spring.store.entity.User;
 import com.spring.store.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,12 +14,10 @@ import java.util.ArrayList;
 public class JwtUserDetailsService implements UserDetailsService {
 
     private final UserRepo userRepo;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public JwtUserDetailsService(UserRepo userRepo, @Lazy PasswordEncoder passwordEncoder) {
+    public JwtUserDetailsService(UserRepo userRepo) {
         this.userRepo = userRepo;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -30,16 +26,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         if (user != null) {
             return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-                    new ArrayList<>());
+                    user.getAuthorities());
         } else {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
-    }
-
-    public User save(User user) {
-        User newUser = new User();
-        newUser.setUsername(user.getUsername());
-        newUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepo.save(newUser);
     }
 }

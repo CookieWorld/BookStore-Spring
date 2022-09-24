@@ -11,9 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -21,7 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-@Controller("/")
+@RestController
+@RequestMapping("/api")
 public class MainController {
     private final BookRepo bookRepo;
     private final OrderLineRepo orderLineRepo;
@@ -38,16 +37,8 @@ public class MainController {
     }
 
     @GetMapping
-    public String main(Model model, @AuthenticationPrincipal User user) {
-        HashMap<Object, Object> data = new HashMap<>();
-
-        data.put("profile", user);
-        data.put("books", bookRepo.findAll());
-
-        model.addAttribute("frontData", data);
-        model.addAttribute("isDevMode", "dev".equals(profile));
-
-        return "index";
+    public List<Book> main() {
+        return bookRepo.findAll();
     }
 
     /*@GetMapping("/find/books")

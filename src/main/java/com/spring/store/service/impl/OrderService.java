@@ -1,4 +1,4 @@
-package com.spring.store.service;
+package com.spring.store.service.impl;
 
 import com.spring.store.entity.Order;
 import com.spring.store.model.Status;

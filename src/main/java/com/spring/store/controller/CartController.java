@@ -8,7 +8,7 @@ import com.spring.store.exceptions.UserNotFoundExecption;
 import com.spring.store.model.*;
 import com.spring.store.repos.BookRepo;
 import com.spring.store.repos.UserRepo;
-import com.spring.store.service.CartService;
+import com.spring.store.service.impl.CartService;
 import com.spring.store.service.UserService;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;

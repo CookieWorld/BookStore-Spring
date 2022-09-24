@@ -3,7 +3,7 @@ package com.spring.store.controller;
 
 import com.spring.store.entity.Order;
 import com.spring.store.entity.User;
-import com.spring.store.service.OrderService;
+import com.spring.store.service.impl.OrderService;
 import com.spring.store.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
