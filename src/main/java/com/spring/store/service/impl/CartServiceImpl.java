@@ -1,26 +1,55 @@
 package com.spring.store.service.impl;
 
-import com.spring.store.entity.Book;
 import com.spring.store.entity.Order;
 import com.spring.store.entity.OrderLine;
 import com.spring.store.entity.User;
 import com.spring.store.model.*;
-import com.spring.store.repos.BookRepo;
 import com.spring.store.repos.OrderLineRepo;
 import com.spring.store.repos.OrderRepo;
+import com.spring.store.repos.UserRepo;
+import com.spring.store.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import javax.mail.MessagingException;
-import java.io.UnsupportedEncodingException;
+import javax.management.OperationsException;
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 
 @Service
-public class CartService {
-    private final Cart cart;
+public class CartServiceImpl implements CartService {
+    private final OrderRepo orderRepo;
+    private final UserRepo userRepo;
+    private final OrderLineRepo orderLineRepo;
+
+    @Autowired
+    public CartServiceImpl(OrderRepo orderRepo, UserRepo userRepo, OrderLineRepo orderLineRepo) {
+        this.orderRepo = orderRepo;
+        this.userRepo = userRepo;
+        this.orderLineRepo = orderLineRepo;
+    }
+
+    @Override
+    public Order createOrder(Cart cart, Principal user) {
+        User currentUser = userRepo.findByUsername(user.getName());
+        List<CartLine> cartLineList = cart.getCartLineList();
+        Order order = new Order();
+        List<OrderLine> orderLines = new ArrayList<>();
+
+        for(CartLine cartLine: cartLineList) {
+            orderLines.add(new OrderLine(cartLine.getBook(), cartLine.getQuantity()));
+        }
+        order.setTotalPrice(cart.getTotalPrice());
+        order.setUser(currentUser);
+
+        order.setOrderLines((List<OrderLine>) orderLineRepo.saveAll(orderLines));
+        orderRepo.save(order);
+
+        return order;
+    }
+    /*private final Cart cart;
     private final BookRepo bookRepo;
     private final OrderRepo orderRepo;
     private final OrderLineRepo orderLineRepo;
@@ -93,5 +122,5 @@ public class CartService {
             Book book = bookById.get();
             book.setQuantity(book.getQuantity() - quantity);
         }
-    }
+    }*/
 }

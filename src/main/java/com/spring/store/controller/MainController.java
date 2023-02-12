@@ -1,44 +1,32 @@
 package com.spring.store.controller;
 
 import com.spring.store.entity.Book;
-import com.spring.store.entity.OrderLine;
-import com.spring.store.entity.User;
-import com.spring.store.repos.BookRepo;
-import com.spring.store.repos.OrderLineRepo;
+import com.spring.store.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api")
 public class MainController {
-    private final BookRepo bookRepo;
-    private final OrderLineRepo orderLineRepo;
 
-    @Value("${upload.path}")
-    private String uploadPath;
-    @Value("${spring.profiles.active}")
-    private String profile;
+    private final BookService bookService;
 
     @Autowired
-    public MainController(BookRepo bookRepo, OrderLineRepo orderLineRepo) {
-        this.bookRepo = bookRepo;
-        this.orderLineRepo = orderLineRepo;
+    public MainController(BookService bookService) {
+        this.bookService = bookService;
     }
 
     @GetMapping
     public List<Book> main() {
-        return bookRepo.findAll();
+        return bookService.findAll();
+    }
+
+    @GetMapping("/search")
+    public List<Book> search(@RequestParam("filter") String filter) {
+        return bookService.findAllWithFilter(filter);
     }
 
     /*@GetMapping("/find/books")

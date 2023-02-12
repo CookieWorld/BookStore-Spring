@@ -3,11 +3,12 @@ package com.spring.store.controller;
 import com.spring.store.entity.Book;
 import com.spring.store.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/books")
@@ -20,9 +21,21 @@ public class BooksController {
         this.bookService = bookService;
     }
 
-    @PostMapping("/add")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public Book addBook(@RequestBody Book book) {
-        return bookService.addBook(book);
+    @PostMapping(value = "/add", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE})
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
+    public Book addBook(@RequestPart("book") Book book, @RequestPart("file") MultipartFile file) throws IOException {
+        return bookService.addBook(book, file);
+    }
+
+    @PatchMapping("/edit")
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
+    public Book editBook(@RequestBody Book book) {
+        return bookService.editBook(book);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
+    public void deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
     }
 }

@@ -44,7 +44,6 @@ public class User implements UserDetails, Serializable {
     @NotBlank(message = "Поле email не может быть пустым")
     @Email(message = "Введите правильный email адрес")
     private String email;
-    private String activationCode;
     private String country;
     private String address;
 
@@ -56,9 +55,6 @@ public class User implements UserDetails, Serializable {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
-
-    private String resetPasswordToken;
-    private String confirmOrderToken;
 
     @Override
     @JsonDeserialize(using = CustomAuthorityDeserializer.class)

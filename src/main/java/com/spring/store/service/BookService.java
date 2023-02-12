@@ -1,7 +1,18 @@
 package com.spring.store.service;
 
 import com.spring.store.entity.Book;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 public interface BookService {
-    Book addBook(Book book);
+    List<Book> findAll();
+
+    List<Book> findAllWithFilter(String filter);
+    Book addBook(Book book, MultipartFile file) throws IOException;
+
+    Book editBook(Book book);
+
+    void deleteBook(Long id);
 }
