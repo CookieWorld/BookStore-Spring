@@ -1,50 +1,57 @@
 package com.spring.store.controller;
 
-import com.spring.store.config.jwt.JwtTokenUtil;
-import com.spring.store.config.jwt.JwtUserDetailsService;
+import com.spring.store.config.jwt.JwtTokenProvider;
 import com.spring.store.entity.User;
 import com.spring.store.model.JwtRequest;
 import com.spring.store.model.JwtResponse;
+import com.spring.store.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
+@RequestMapping("/api")
 public class AuthenticateController {
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final JwtUserDetailsService jwtUserDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
     @Autowired
-    public AuthenticateController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, JwtUserDetailsService jwtUserDetailsService) {
+    public AuthenticateController(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService) {
         this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.jwtUserDetailsService = jwtUserDetailsService;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userService = userService;
     }
 
     @PostMapping("/authenticate")
     public JwtResponse createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+        String username = authenticationRequest.getUsername();
 
-        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+        User user = userService.findByUsername(username);
 
-        final UserDetails userDetails = jwtUserDetailsService
-                .loadUserByUsername(authenticationRequest.getUsername());
+        if (user == null) {
+            throw new UsernameNotFoundException("user with username: " + username + " not found");
+        }
 
-        final String token = jwtTokenUtil.generateToken(userDetails);
+        authenticate(username, authenticationRequest.getPassword());
 
-        return new JwtResponse(token);
+        String token = jwtTokenProvider.createToken(username, user.getRoles());
+
+        log.info("User is authenticate: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+            return new JwtResponse(token, user.getUsername(), user.isAdmin(), user.isManager());
     }
 
     @PostMapping("/register")
     public User saveUser(@RequestBody User user) {
-        return jwtUserDetailsService.save(user);
+        return userService.register(user);
     }
 
     private void authenticate(String username, String password) throws Exception {

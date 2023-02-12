@@ -3,34 +3,26 @@ package com.spring.store.entity;
 import com.spring.store.entity.Book;
 import com.spring.store.entity.Order;
 import com.sun.istack.NotNull;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "orderLine")
-@Data
+@RequiredArgsConstructor
 @NoArgsConstructor
+@Setter
+@Getter
 public class OrderLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
-
     @JoinColumn(name = "book")
     @ManyToOne
+    @NonNull
     private Book book;
 
-    private String author = null;
-
-    private String name = null;
-
-    private Integer price = null;
-
-    @NotNull
+    @NonNull
     private int quantity;
 }

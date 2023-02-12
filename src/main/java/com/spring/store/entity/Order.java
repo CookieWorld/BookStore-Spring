@@ -1,17 +1,19 @@
 package com.spring.store.entity;
 
 import com.spring.store.model.Status;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "orderT")
-@Data
 @NoArgsConstructor
+@Getter
+@Setter
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +25,23 @@ public class Order {
 
     private Status status = Status.Создан;
 
-    private String trackCode;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "order")
-    Set<OrderLine> orderLines;
+    @JoinColumn(name = "order_id")
+    @OneToMany
+    List<OrderLine> orderLines;
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", date=" + date +
+                ", totalPrice=" + totalPrice +
+                ", status=" + status +
+                ", user=" + user +
+                ", orderLines=" + orderLines +
+                '}';
+    }
 }
